@@ -1,3 +1,18 @@
+#![crate_id="CSVProvider#0.1-pre"]
+#![crate_type="dylib"]
+
+// why doesn't "lib" work?
+/*
+CSVSample.rs:38:4: 38:21 error: macro undefined: 'ProvideCSV_labels'
+CSVSample.rs:38    ProvideCSV_labels!("MyCSV", "./sample1.txt", "Verse");
+                   ^~~~~~~~~~~~~~~~~
+error: aborting due to previous error
+ */
+
+// rustc 0.11.0-pre (732e057 2014-06-06 01:21:54 -0700)
+// host: x86_64-apple-darwin
+
+
 #![feature(globs, macro_registrar, macro_rules, quote, managed_boxes)]
 
 extern crate syntax;
@@ -114,7 +129,6 @@ fn provide_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Box<MacResul
    println!("provide_labels: labels: {}", labels);
 */
 
-   //MRExpr(create_slice(sp, entries))
    return DummyResult::expr(sp);
 }
 

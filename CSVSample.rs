@@ -1,3 +1,6 @@
+#![crate_id="CSVSample#0.1-pre"]
+#![crate_type="bin"]
+
 #![feature(phase)]
 
 #[phase(syntax)]

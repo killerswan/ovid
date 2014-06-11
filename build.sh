@@ -1,2 +1,4 @@
-rustc --crate-type lib -o CSVProvider CSVProvider.rs && \
-rustc --test           -o CSVSample   CSVSample.rs
+#!/bin/sh
+
+rustc CSVProvider.rs && \
+rustc --test -L . CSVSample.rs

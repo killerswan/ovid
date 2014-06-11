@@ -119,9 +119,9 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
 
    //println!("provide_labels: args: {}", entries);
 
-   let name   = entries.pop().expect("should be given a type name");
-   let path   = entries.pop().expect("should be given a CSV file path");
-   let labels = entries.pop().expect("should be given column labels");
+   let name   = entries.shift().expect("should be given a type name");
+   let path   = entries.shift().expect("should be given a CSV file path");
+   let labels = entries.shift().expect("should be given column labels");
 
    println!("provide_csv_given_labels: name:   {}", name.str);
    println!("provide_csv_given_labels: path:   {}", path.str);

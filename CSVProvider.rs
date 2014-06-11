@@ -109,15 +109,11 @@ fn parse_entries(cx: &mut ExtCtxt, tts: &[TokenTree]) -> Option<Vec<Entry>> {
 }
 
 
-// FIXME: right now we only look at one column (CSV, haha)
-
 fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Box<MacResult> {
    let mut entries = match parse_entries(cx, tts) {
       Some(entries) => entries,
       None => return DummyResult::expr(sp),
    };
-
-   //println!("provide_labels: args: {}", entries);
 
    let name   = entries.shift().expect("should be given a type name");
    let path   = entries.shift().expect("should be given a CSV file path");
@@ -126,6 +122,14 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
    println!("provide_csv_given_labels: name:   {}", name.str);
    println!("provide_csv_given_labels: path:   {}", path.str);
    println!("provide_csv_given_labels: labels: {}", labels.str);
+
+   // PENDING
+   // read the CSV and try to get the type of data in it
+   // create a type with
+   //  * this name,
+   //  * these labeled columns,
+   //  * discovered type of data
+   //  * a constructor which reads the whole file
 
    return DummyResult::expr(sp);
 }

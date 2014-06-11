@@ -1,0 +1,20 @@
+[attr]code    eol=lf   whitespace=tab-in-indent,trailing-space,tabwidth=3
+[attr]wincode code eol=crlf
+
+*.rs      code
+*.sh      code
+*.bash    code
+*.py      code
+*.rb      code
+*.pl      code
+*.jl      code
+*.yml     code
+*.md      code
+*.js      code
+*.html    code
+*.htm     code
+*.hs      code
+*.fs      wincode
+*.fsproj  wincode
+*.bat     wincode
+*.cmd     wincode

@@ -47,7 +47,7 @@ use std::io::Process;
 pub fn macro_registrar(register: |Name, SyntaxExtension|) {
     register(token::intern("ProvideCSV_labels"),
              NormalTT(box BasicMacroExpander {
-                 expander: provide_labels,
+                 expander: provide_csv_given_labels,
                  span: None,
              },
              None));
@@ -111,23 +111,21 @@ fn parse_entries(cx: &mut ExtCtxt, tts: &[TokenTree]) -> Option<Vec<Entry>> {
 
 // FIXME: right now we only look at one column (CSV, haha)
 
-fn provide_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Box<MacResult> {
+fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Box<MacResult> {
    let mut entries = match parse_entries(cx, tts) {
       Some(entries) => entries,
       None => return DummyResult::expr(sp),
    };
 
-/*
-   println!("provide_labels: args: {}", entries);
+   //println!("provide_labels: args: {}", entries);
 
-   let name   = entries[0];
-   let path   = entries[1];
-   let labels = entries[2];
+   let name   = entries.pop().expect("should be given a type name");
+   let path   = entries.pop().expect("should be given a CSV file path");
+   let labels = entries.pop().expect("should be given column labels");
 
-   println!("provide_labels: name:   {}", name);
-   println!("provide_labels: path:   {}", path);
-   println!("provide_labels: labels: {}", labels);
-*/
+   println!("provide_csv_given_labels: name:   {}", name.str);
+   println!("provide_csv_given_labels: path:   {}", path.str);
+   println!("provide_csv_given_labels: labels: {}", labels.str);
 
    return DummyResult::expr(sp);
 }

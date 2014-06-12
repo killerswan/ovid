@@ -30,6 +30,7 @@ use syntax::ast::{Name,
                   MutImmutable};
 use syntax::codemap::Span;
 use syntax::ext::base::{SyntaxExtension,
+                        BasicMacroExpander,
                         ExtCtxt,
                         MacResult,
                         MacPat,

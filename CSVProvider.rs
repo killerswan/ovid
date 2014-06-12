@@ -32,10 +32,11 @@ use syntax::codemap::Span;
 use syntax::ext::base::{SyntaxExtension,
                         ExtCtxt,
                         MacResult,
+                        MacPat,
+                        MacItem,
                         DummyResult,
                         MacExpr,
-                        NormalTT,
-                        BasicMacroExpander};
+                        NormalTT};
 use syntax::parse;
 use syntax::parse::token;
 use syntax::parse::token::{InternedString, COMMA, EOF};
@@ -140,7 +141,7 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
  */
 
    let fortyfour = 44;
-   return MacExpr::new(quote_expr!(cx, {
+   return MacPat::new(quote_stmt!(cx, {
       struct MyCSV {
          data: Vec<(String)>,
       }

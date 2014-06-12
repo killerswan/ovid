@@ -39,7 +39,7 @@ fn csv_basic() {
 fn csv_labeled() {
 
    // tell the type provider the column name
-   ProvideCSV_labels!("MyCSV", "./sample1.txt", "Verse");
+   ProvideCSV_labels!("MyCSV", "./sample1.txt", "Verse")
 
    assert_eq!(1,1);
 

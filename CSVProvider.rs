@@ -15,6 +15,9 @@ error: aborting due to previous error
 
 #![feature(globs, macro_registrar, macro_rules, quote, managed_boxes)]
 
+#![allow(unused_imports)]
+#![allow(unused_variable)]
+
 extern crate syntax;
 
 use syntax::ast::{Name,
@@ -131,6 +134,25 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
    //  * discovered type of data
    //  * a constructor which reads the whole file
 
-   return DummyResult::expr(sp);
+/*
+   let banana = "YAY! BANANA!";
+   return MacExpr::new(quote_expr!(cx, {let x: $banana = 44}));
+ */
+
+   let fortyfour = 44;
+   return MacExpr::new(quote_expr!(cx, {
+      struct MyCSV {
+         data: Vec<(String)>,
+      }
+   
+      impl MyCSV {
+         fn new(&self) {
+            println!("HMMMMMM.");
+            return MyCSV {
+               data: (vec!["one".to_string(), "two".to_string(), "three".to_string()]),
+            };
+         }
+      }
+   }));
 }
 

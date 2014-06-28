@@ -38,6 +38,7 @@ use syntax::ext::base::{SyntaxExtension,
                         DummyResult,
                         MacExpr,
                         NormalTT};
+use std::gc::Gc;
 use syntax::parse;
 use syntax::parse::token;
 use syntax::parse::token::{InternedString, COMMA, EOF};
@@ -47,6 +48,15 @@ use std::io::fs;
 use std::os;
 use std::str;
 use std::io::Process;
+use syntax::ast;
+use syntax::ast::Name;
+
+use syntax::util::small_vector::SmallVector;
+
+use std::collections::HashMap;
+use std::gc::{Gc, GC};
+
+
 
 #[macro_registrar]
 pub fn macro_registrar(register: |Name, SyntaxExtension|) {
@@ -61,7 +71,7 @@ pub fn macro_registrar(register: |Name, SyntaxExtension|) {
 #[deriving(Clone)]
 struct Entry {
     str: InternedString,
-    expr: @Expr
+    expr: Gc<Expr>
 }
 
 // see https://github.com/sfackler/syntax-ext-talk/blob/gh-pages/simple-ext/lib.rs
@@ -113,6 +123,21 @@ fn parse_entries(cx: &mut ExtCtxt, tts: &[TokenTree]) -> Option<Vec<Entry>> {
     Some(entries)
 }
 
+/// A convenience type for macros that return a single item.
+pub struct MacItems {
+    items: Vec<Gc<ast::Item>>
+}
+
+impl MacItems {
+    pub fn new(items: Vec<Gc<ast::Item>>) -> Box<MacResult> {
+        box MacItems { items: items } as Box<MacResult>
+    }
+}
+impl MacResult for MacItems {
+    fn make_items(&self) -> Option<SmallVector<Gc<ast::Item>>> {
+        Some(SmallVector::many(self.items.clone()))
+    }
+}
 
 fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Box<MacResult> {
    let mut entries = match parse_entries(cx, tts) {
@@ -136,17 +161,23 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
    //  * discovered type of data
    //  * a constructor which reads the whole file
 
-/*
+/* OLD
    let banana = "YAY! BANANA!";
    return MacExpr::new(quote_expr!(cx, {let x: $banana = 44}));
  */
 
-   let fortyfour = 44;
-   return MacPat::new(quote_stmt!(cx, {
-      struct MyCSV {
-         data: Vec<(String)>,
-      }
-   
+   fn define_my_csv(cx0: &mut ExtCtxt) -> Option<Gc<syntax::ast::Item>> {
+      let item1: Option<Gc<syntax::ast::Item>>  = quote_item!(cx0,
+         struct MyCSV {
+            data: Vec<(String)>,
+         }
+      );
+      return item1;
+   }
+
+   let item1 = define_my_csv(cx);  // Why is this necessary?
+
+   let item2: Option<Gc<syntax::ast::Item>>  = quote_item!(cx,
       impl MyCSV {
          fn new(&self) {
             println!("HMMMMMM.");
@@ -155,6 +186,11 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
             };
          }
       }
-   }));
+   );
+
+   let mut items = Vec::new();
+   items.push(item1.expect("Should be able to construct MyCSV."));
+   items.push(item2.expect("Should be able to construct MyCSV."));
+   return MacItems::new(items);
 }
 

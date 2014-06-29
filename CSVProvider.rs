@@ -134,13 +134,13 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
       None => return DummyResult::expr(sp),
    };
 
-   let name   = entries.shift().expect("should be given a type name");
-   let path   = entries.shift().expect("should be given a CSV file path");
-   let labels = entries.shift().expect("should be given column labels");
+   let name   = entries.shift().expect("should be given a type name").str;
+   let path   = entries.shift().expect("should be given a CSV file path").str;
+   let labels = entries.shift().expect("should be given column labels").str;
 
-   println!("provide_csv_given_labels: name:   {}", name.str);
-   println!("provide_csv_given_labels: path:   {}", path.str);
-   println!("provide_csv_given_labels: labels: {}", labels.str);
+   println!("provide_csv_given_labels: name:   {}", name);
+   println!("provide_csv_given_labels: path:   {}", path);
+   println!("provide_csv_given_labels: labels: {}", labels);
 
    // PENDING
    // read the CSV and try to get the type of data in it

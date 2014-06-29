@@ -13,12 +13,13 @@ error: aborting due to previous error
 // host: x86_64-apple-darwin
 
 
-#![feature(globs, macro_registrar, macro_rules, quote, managed_boxes)]
+#![feature(globs, macro_rules, quote, managed_boxes)]
 
 #![allow(unused_imports)]
 #![allow(unused_variable)]
 
 extern crate syntax;
+extern crate rustc;
 
 use syntax::ast::{Name,
                   TokenTree,
@@ -56,16 +57,10 @@ use syntax::util::small_vector::SmallVector;
 use std::collections::HashMap;
 use std::gc::{Gc, GC};
 
+use rustc::plugin::Registry;
 
-
-#[macro_registrar]
-pub fn macro_registrar(register: |Name, SyntaxExtension|) {
-    register(token::intern("ProvideCSV_labels"),
-             NormalTT(box BasicMacroExpander {
-                 expander: provide_csv_given_labels,
-                 span: None,
-             },
-             None));
+pub fn macro_registrar(reg: &mut Registry) {
+    reg.register_macro("ProvideCSV_labels", provide_csv_given_labels);
 }
 
 #[deriving(Clone)]

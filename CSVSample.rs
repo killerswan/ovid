@@ -6,7 +6,7 @@
 
 #![feature(phase)]
 
-#[phase(syntax)]
+#[phase(plugin)]
 extern crate CSVProvider;
 
 extern crate test;

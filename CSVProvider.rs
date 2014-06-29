@@ -168,7 +168,7 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
    let item1 = define_my_csv(cx);  // Why is this necessary?
 
    let item2: Option<Gc<syntax::ast::Item>>  = quote_item!(cx,
-      impl MyCSV {
+      impl $name {
          pub fn new() -> MyCSV {  // BUG: note removing the { leads to goofy error messsages
             println!("HMMMMMM.");
             return MyCSV {

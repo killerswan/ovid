@@ -2,18 +2,11 @@
 #![crate_type="dylib"]
 
 // why doesn't "lib" work?
-/*
-CSVSample.rs:38:4: 38:21 error: macro undefined: 'ProvideCSV_labels'
-CSVSample.rs:38    ProvideCSV_labels!("MyCSV", "./sample1.txt", "Verse");
-                   ^~~~~~~~~~~~~~~~~
-error: aborting due to previous error
- */
 
-// rustc 0.11.0-pre (732e057 2014-06-06 01:21:54 -0700)
-// host: x86_64-apple-darwin
+// rustc 0.11.0-pre (b47f2226a25654c5b781d27a91f2fa5274b3a347 2014-06-28 14:31:37 +0000)
 
 
-#![feature(globs, macro_rules, quote, managed_boxes)]
+#![feature(globs, macro_rules, quote, managed_boxes, plugin_registrar)]
 
 #![allow(unused_imports)]
 #![allow(unused_variable)]
@@ -59,6 +52,7 @@ use std::gc::{Gc, GC};
 
 use rustc::plugin::Registry;
 
+#[plugin_registrar]
 pub fn macro_registrar(reg: &mut Registry) {
     reg.register_macro("ProvideCSV_labels", provide_csv_given_labels);
 }
@@ -163,8 +157,8 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
 
    fn define_my_csv(cx0: &mut ExtCtxt) -> Option<Gc<syntax::ast::Item>> {
       let item1: Option<Gc<syntax::ast::Item>>  = quote_item!(cx0,
-         struct MyCSV {
-            data: Vec<(String)>,
+         pub struct MyCSV {
+            pub data: Vec<(String)>,
          }
       );
       return item1;
@@ -174,18 +168,20 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
 
    let item2: Option<Gc<syntax::ast::Item>>  = quote_item!(cx,
       impl MyCSV {
-         fn new(&self) {
+         pub fn new() -> MyCSV {  // BUG: note removing the return time leads to goofy error messsages
             println!("HMMMMMM.");
             return MyCSV {
-               data: (vec!["one".to_string(), "two".to_string(), "three".to_string()]),
+               data: (vec!["zero".to_string(), "one".to_string(), "two".to_string()]),
             };
          }
       }
    );
 
-   let mut items = Vec::new();
-   items.push(item1.expect("Should be able to construct MyCSV."));
-   items.push(item2.expect("Should be able to construct MyCSV."));
+   //let mut items = Vec::new();
+   //items.push(item1.expect("Should be able to construct MyCSV."));
+   //items.push(item2.expect("Should be able to construct MyCSV."));
+   let items = vec![item1.expect("Should be able to construct MyCSV."),
+                    item2.expect("Should be able to construct MyCSV.")];
    return MacItems::new(items);
 }
 

@@ -38,14 +38,18 @@ fn csv_basic() {
 #[test]
 fn csv_labeled() {
 
+   mod Demo {
+      ProvideCSV_labels!("MyCSV", "./sample1.txt", "Verse")
+   }
+
    // tell the type provider the column name
-   ProvideCSV_labels!("MyCSV", "./sample1.txt", "Verse")
 
-   assert_eq!(1,1);
+   assert_eq!(1u,1u);
 
-   //let samples = MyCSV.new();
+   let samples = Demo::MyCSV::new();
 
-   //assert_eq!("A DECLARATION".to_string(), samples.data[2].Verse);
+   //assert_eq!("A DECLARATION".to_string(), samples.data.get(2).Verse);
+   assert_eq!("two".to_string(), samples.data.get(2).clone());
 }
 
 /*

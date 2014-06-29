@@ -155,6 +155,7 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
    return MacExpr::new(quote_expr!(cx, {let x: $banana = 44}));
  */
 
+
    fn define_my_csv(cx0: &mut ExtCtxt) -> Option<Gc<syntax::ast::Item>> {
       let item1: Option<Gc<syntax::ast::Item>>  = quote_item!(cx0,
          pub struct MyCSV {
@@ -168,7 +169,7 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
 
    let item2: Option<Gc<syntax::ast::Item>>  = quote_item!(cx,
       impl MyCSV {
-         pub fn new() -> MyCSV {  // BUG: note removing the return time leads to goofy error messsages
+         pub fn new() -> MyCSV {  // BUG: note removing the { leads to goofy error messsages
             println!("HMMMMMM.");
             return MyCSV {
                data: (vec!["zero".to_string(), "one".to_string(), "two".to_string()]),
@@ -177,9 +178,6 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
       }
    );
 
-   //let mut items = Vec::new();
-   //items.push(item1.expect("Should be able to construct MyCSV."));
-   //items.push(item2.expect("Should be able to construct MyCSV."));
    let items = vec![item1.expect("Should be able to construct MyCSV."),
                     item2.expect("Should be able to construct MyCSV.")];
    return MacItems::new(items);

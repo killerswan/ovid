@@ -158,7 +158,8 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
    //  * discovered type of data
    //  * a constructor which reads the whole file
 
-   let MyCSV: Ident = token::str_to_ident("MyCSV");
+   let ns: &str = "MyCSV";
+   let MyCSV: Ident = token::str_to_ident(ns);
 
    // FIXME: Why is this fn necessary?
    let define_my_csv = |cx0 : &mut ExtCtxt| {

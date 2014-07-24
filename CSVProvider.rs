@@ -21,6 +21,7 @@ use syntax::ast::{
    ExprLit,
    ExprVec,
    LitStr,
+   Ident,
    DUMMY_NODE_ID,
    MutImmutable
 };
@@ -163,20 +164,21 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
    return MacExpr::new(quote_expr!(cx, {let x: $banana = 44}));
  */
 
-   // (2) PENDING FIXME
-   // given a macro argument "Xyz" we want to use it everywhere without the quotes ;)
-   let MyCSV : TokenTree = token::str_to_ident(name.to_string());
+   let MyCSV : Ident = token::str_to_ident("MyCSV");
 
-   fn define_my_csv(cx0: &mut ExtCtxt) -> Option<Gc<syntax::ast::Item>> {
-      let item1: Option<Gc<syntax::ast::Item>>  = quote_item!(cx0,
-         pub struct /* FIXME: $ */ MyCSV {
+//   fn define_my_csv(cx0: &mut ExtCtxt) -> Option<Gc<syntax::ast::Item>> {
+   let define_my_csv = |cx0 : &mut ExtCtxt| {
+      let item1: Option<Gc<syntax::ast::Item>> = quote_item!(cx0,
+//         pub struct  MyCSV {
+         pub struct $MyCSV {
             pub data: Vec<(String)>,
          }
       );
       return item1;
-   }
+   };
+//   }
 
-   let item1 = define_my_csv(cx);  // (1) Why is this necessary?
+   let item1: Option<Gc<syntax::ast::Item>> = define_my_csv(cx);  // (1) Why is this necessary?
 
    let item2: Option<Gc<syntax::ast::Item>>  = quote_item!(cx,
       impl $MyCSV {

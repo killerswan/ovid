@@ -11,6 +11,7 @@
 #![allow(unused_imports)]
 //#![allow(unused_variable)]
 #![allow(uppercase_variables)]
+#![allow(unnecessary_parens)]
 
 extern crate syntax;
 extern crate rustc;
@@ -133,7 +134,7 @@ impl MacResult for MacItems {
 }
 
 fn parse_csv_row<'a>(raw: &'a str, expected_columns: Option<uint>) -> str::StrSplits<'a> {
-   let it = raw.split_str(",");
+   let mut it = raw.split_str(",");
 
    // take a pulse
    let _whatever = it.map(|xx| {
@@ -141,20 +142,19 @@ fn parse_csv_row<'a>(raw: &'a str, expected_columns: Option<uint>) -> str::StrSp
       return xx;
    });
 
+   match expected_columns {
+      Some(count) => {
+         if (count == it.count()) {
+            println!("parse_csv_row: matching length expected");
+         } else {
+            println!("parse_csv_row: wrong length!");
+         }
+      },
+      None => (),
+   }
+
    return it;
 }
-
-/* SNIP
-    let mut res: Vec<Vec<(int, int)>> =
-        // rotations
-        iterate(piece, |rot| rot.iter().map(|&(y, x)| (x + y, -y)).collect())
-        .take(if all {6} else {3})
-        // mirror
-        .flat_map(|cur_piece| {
-            iterate(cur_piece, |mir| mir.iter().map(|&(y, x)| (x, y)).collect())
-            .take(2)
-        }).collect();
- */
 
 fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Box<MacResult> {
    let mut entries = match parse_entries(cx, tts) {

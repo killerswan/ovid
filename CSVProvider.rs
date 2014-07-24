@@ -14,24 +14,28 @@
 extern crate syntax;
 extern crate rustc;
 
-use syntax::ast::{Name,
-                  TokenTree,
-                  Expr,
-                  ExprLit,
-                  ExprVec,
-                  LitStr,
-                  DUMMY_NODE_ID,
-                  MutImmutable};
+use syntax::ast::{
+   Name,
+   TokenTree,
+   Expr,
+   ExprLit,
+   ExprVec,
+   LitStr,
+   DUMMY_NODE_ID,
+   MutImmutable
+};
 use syntax::codemap::Span;
-use syntax::ext::base::{SyntaxExtension,
-                        BasicMacroExpander,
-                        ExtCtxt,
-                        MacResult,
-                        MacPat,
-                        MacItem,
-                        DummyResult,
-                        MacExpr,
-                        NormalTT};
+use syntax::ext::base::{
+   SyntaxExtension,
+   BasicMacroExpander,
+   ExtCtxt,
+   MacResult,
+   MacPat,
+   MacItem,
+   DummyResult,
+   MacExpr,
+   NormalTT
+};
 use std::gc::Gc;
 use syntax::parse;
 use syntax::parse::token;
@@ -54,78 +58,78 @@ use rustc::plugin::Registry;
 
 #[plugin_registrar]
 pub fn macro_registrar(reg: &mut Registry) {
-    reg.register_macro("ProvideCSV_labels", provide_csv_given_labels);
+   reg.register_macro("ProvideCSV_labels", provide_csv_given_labels);
 }
 
 #[deriving(Clone)]
 struct Entry {
-    str: InternedString,
-    expr: Gc<Expr>
+   str: InternedString,
+   expr: Gc<Expr>
 }
 
 // see https://github.com/sfackler/syntax-ext-talk/blob/gh-pages/simple-ext/lib.rs
 fn parse_entries(cx: &mut ExtCtxt, tts: &[TokenTree]) -> Option<Vec<Entry>> {
-    let mut parser = parse::new_parser_from_tts(
-         cx.parse_sess(),
-         cx.cfg(),
-         tts.iter()
-            .map(|x| (*x).clone())
-            .collect()
-    );
+   let mut parser = parse::new_parser_from_tts(
+       cx.parse_sess(),
+       cx.cfg(),
+       tts.iter()
+          .map(|x| (*x).clone())
+          .collect()
+   );
 
-    let mut entries: Vec<Entry> = Vec::new();
+   let mut entries: Vec<Entry> = Vec::new();
 
-    let mut error = false;
-    while parser.token != EOF {
-        let entry = parser.parse_expr();
+   let mut error = false;
+   while parser.token != EOF {
+      let entry = parser.parse_expr();
 
-        let entry_str = match entry.node {
-            ExprLit(lit) => {
-                match lit.node {
-                    LitStr(ref s, _) => s.clone(),
-                    _ => {
-                        cx.span_err(entry.span, "expected string literal");
-                        error = true;
-                        InternedString::new("")
-                    }
+      let entry_str = match entry.node {
+         ExprLit(lit) => {
+            match lit.node {
+               LitStr(ref s, _) => s.clone(),
+               _ => {
+                  cx.span_err(entry.span, "expected string literal");
+                  error = true;
+                  InternedString::new("")
                 }
             }
-            _ => {
+         }
+         _ => {
                 cx.span_err(entry.span, "expected string literal");
                 error = true;
                 InternedString::new("")
-            }
-        };
+         }
+      };
 
-        entries.push(Entry { str: entry_str, expr: entry });
+      entries.push(Entry { str: entry_str, expr: entry });
 
-        if !parser.eat(&COMMA) && parser.token != EOF {
-            cx.span_err(parser.span, "expected `,`");
-            return None;
-        }
+      if !parser.eat(&COMMA) && parser.token != EOF {
+         cx.span_err(parser.span, "expected `,`");
+         return None;
+      }
     }
 
-    if error {
-        return None;
-    }
+   if error {
+      return None;
+   }
 
-    Some(entries)
+   Some(entries)
 }
 
 /// A convenience type for macros that return a single item.
 pub struct MacItems {
-    items: Vec<Gc<ast::Item>>
+   items: Vec<Gc<ast::Item>>
 }
 
 impl MacItems {
-    pub fn new(items: Vec<Gc<ast::Item>>) -> Box<MacResult> {
-        box MacItems { items: items } as Box<MacResult>
-    }
+   pub fn new(items: Vec<Gc<ast::Item>>) -> Box<MacResult> {
+      box MacItems { items: items } as Box<MacResult>
+   }
 }
 impl MacResult for MacItems {
-    fn make_items(&self) -> Option<SmallVector<Gc<ast::Item>>> {
-        Some(SmallVector::many(self.items.clone()))
-    }
+   fn make_items(&self) -> Option<SmallVector<Gc<ast::Item>>> {
+      Some(SmallVector::many(self.items.clone()))
+   }
 }
 
 fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Box<MacResult> {

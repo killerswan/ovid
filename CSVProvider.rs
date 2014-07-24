@@ -40,6 +40,9 @@ use syntax::ext::base::{
    NormalTT
 };
 use std::gc::Gc;
+use syntax::ext::quote::{
+   //expand_parse_call
+};
 use syntax::parse;
 use syntax::parse::token;
 use syntax::parse::token::{InternedString, COMMA, EOF};
@@ -205,13 +208,34 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
 
    println!("Defining items in the CSV provider...");
 
-   // FIXME: Why is this fn necessary?
+/*
+   fn mut_ref_cx<'a>(context: &'a mut ExtCtxt) -> &'a mut ExtCtxt {
+        let &ExtCtxt(ref mut context_prime) = context;
+        return context_prime;
+   }
+*/
+
+
+/*
+   pub fn expand_quote_item(
+      cx: &ExtCtxt,
+      sp: Span,
+      tts: &[ast::TokenTree])
+      -> Box<base::MacResult>
+   {
+      let expanded = expand_parse_call(cx, sp, "parse_item_with_outer_attributes", vec!(), tts);
+      base::MacExpr::new(expanded)
+   }
+*/
+
+
    let define_my_csv_row = |cx0 : &mut ExtCtxt| {
 
-      // now, nested problems with cx
-      let col = quote_item!(cx0, pub $col0: String).expect("column parsing");
+      let cx1 : &ExtCtxt = cx0;
 
-      return quote_item!(cx0,
+      let col = quote_item!(cx1, pub $col0: String).expect("column parsing");
+
+      return quote_item!(cx1,
          pub struct $MyCsvRow {
             $col,
          }

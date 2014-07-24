@@ -39,7 +39,7 @@ fn csv_basic() {
 fn csv_labeled() {
 
    mod Demo {
-      ProvideCSV_labels!(MyCSV, "./sample1.txt", "Verse")
+      ProvideCSV_labels!("MyCSV", "./sample1.txt", "Verse")
    }
 
    // tell the type provider the column name

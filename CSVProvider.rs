@@ -138,13 +138,13 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
       None => return DummyResult::expr(sp),
    };
 
-   let raw_name   = entries.shift().expect("should be given a type name");
-   let raw_path   = entries.shift().expect("should be given a CSV file path");
-   let raw_labels = entries.shift().expect("should be given column labels");
+   let raw_name   : Entry = entries.shift().expect("should be given a type name");
+   let raw_path   : Entry = entries.shift().expect("should be given a CSV file path");
+   let raw_labels : Entry = entries.shift().expect("should be given column labels");
 
-   let name   = raw_name.str;
-   let path   = raw_path.str;
-   let labels = raw_labels.str;
+   let name   : InternedString = raw_name.str;
+   let path   : InternedString = raw_path.str;
+   let labels : InternedString = raw_labels.str;
 
    println!("provide_csv_given_labels: name:   {}", name);
    println!("provide_csv_given_labels: path:   {}", path);
@@ -163,7 +163,6 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
    return MacExpr::new(quote_expr!(cx, {let x: $banana = 44}));
  */
 
-
    fn define_my_csv(cx0: &mut ExtCtxt) -> Option<Gc<syntax::ast::Item>> {
       let item1: Option<Gc<syntax::ast::Item>>  = quote_item!(cx0,
          pub struct MyCSV {
@@ -175,10 +174,11 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
 
    let item1 = define_my_csv(cx);  // Why is this necessary?
 
-   let magic_name = raw_name.expr;
+   // PENDING FIXME:
+   let magic : TokenTree = token::str_to_ident(name.to_string());
 
    let item2: Option<Gc<syntax::ast::Item>>  = quote_item!(cx,
-      impl $magic_name {
+      impl $magic {
          pub fn new() -> MyCSV {
             println!("HMMMMMM.");
             return MyCSV {

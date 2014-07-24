@@ -88,14 +88,14 @@ fn parse_entries(cx: &mut ExtCtxt, tts: &[TokenTree]) -> Option<Vec<Entry>> {
             match lit.node {
                LitStr(ref s, _) => s.clone(),
                _ => {
-                  cx.span_err(entry.span, "expected string literal");
+                  cx.span_err(entry.span, "expected string literal (1)");
                   error = true;
                   InternedString::new("")
-                }
+               }
             }
          }
          _ => {
-                cx.span_err(entry.span, "expected string literal");
+                cx.span_err(entry.span, "expected string literal (2)");
                 error = true;
                 InternedString::new("")
          }
@@ -138,9 +138,13 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
       None => return DummyResult::expr(sp),
    };
 
-   let name   = entries.shift().expect("should be given a type name").str;
-   let path   = entries.shift().expect("should be given a CSV file path").str;
-   let labels = entries.shift().expect("should be given column labels").str;
+   let raw_name   = entries.shift().expect("should be given a type name");
+   let raw_path   = entries.shift().expect("should be given a CSV file path");
+   let raw_labels = entries.shift().expect("should be given column labels");
+
+   let name   = raw_name.str;
+   let path   = raw_path.str;
+   let labels = raw_labels.str;
 
    println!("provide_csv_given_labels: name:   {}", name);
    println!("provide_csv_given_labels: path:   {}", path);
@@ -171,9 +175,11 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
 
    let item1 = define_my_csv(cx);  // Why is this necessary?
 
+   let magic_name = raw_name.expr;
+
    let item2: Option<Gc<syntax::ast::Item>>  = quote_item!(cx,
-      impl $name {
-         pub fn new() -> MyCSV {  // BUG: note removing the { leads to goofy error messsages
+      impl $magic_name {
+         pub fn new() -> MyCSV {
             println!("HMMMMMM.");
             return MyCSV {
                data: (vec!["zero".to_string(), "one".to_string(), "two".to_string()]),

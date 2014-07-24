@@ -196,11 +196,12 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
 
    let MyCsv    = interned_to_ident(name.clone());
    let MyCsvRow = interned_to_ident_with_suffix(name, "Row");
-   let col0     = interned_to_ident(labels.clone()); // FIXME: parse this field
+   let col0     = interned_to_ident(labels.clone());
 
-   let temp = format!("{}", labels);
-   let labels_parsed = parse_csv_row(temp.as_slice(), None);
+   println!("Parsing given labels...");
 
+   let labels1 = format!("{}", labels);
+   let labels_iter = parse_csv_row(labels1.as_slice(), None);
 
    println!("Defining items in the CSV provider...");
 

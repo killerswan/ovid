@@ -165,6 +165,8 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
       None => return DummyResult::expr(sp),
    };
 
+   let icx : &ExtCtxt = cx;  // an immutable borrow
+
    let raw_name   : Entry = entries.shift().expect("should be given a type name");
    let raw_path   : Entry = entries.shift().expect("should be given a CSV file path");
    let raw_labels : Entry = entries.shift().expect("should be given column labels");
@@ -207,29 +209,6 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
    let labels_iter = parse_csv_row(labels1.as_slice(), None);
 
    println!("Defining items in the CSV provider...");
-
-/*
-   fn mut_ref_cx<'a>(context: &'a mut ExtCtxt) -> &'a mut ExtCtxt {
-        let &ExtCtxt(ref mut context_prime) = context;
-        return context_prime;
-   }
-*/
-
-
-/*
-   pub fn expand_quote_item(
-      cx: &ExtCtxt,
-      sp: Span,
-      tts: &[ast::TokenTree])
-      -> Box<base::MacResult>
-   {
-      let expanded = expand_parse_call(cx, sp, "parse_item_with_outer_attributes", vec!(), tts);
-      base::MacExpr::new(expanded)
-   }
-*/
-
-
-   let icx : &ExtCtxt = cx;  // an immutable borrow
 
    // TODO: iterate through call columns
    let col = quote_item!(icx,

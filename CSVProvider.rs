@@ -9,7 +9,8 @@
 #![feature(globs, macro_rules, quote, managed_boxes, plugin_registrar)]
 
 #![allow(unused_imports)]
-#![allow(unused_variable)]
+//#![allow(unused_variable)]
+#![allow(uppercase_variables)]
 
 extern crate syntax;
 extern crate rustc;
@@ -117,11 +118,9 @@ fn parse_entries(cx: &mut ExtCtxt, tts: &[TokenTree]) -> Option<Vec<Entry>> {
    Some(entries)
 }
 
-/// A convenience type for macros that return a single item.
 pub struct MacItems {
    items: Vec<Gc<ast::Item>>
 }
-
 impl MacItems {
    pub fn new(items: Vec<Gc<ast::Item>>) -> Box<MacResult> {
       box MacItems { items: items } as Box<MacResult>
@@ -159,28 +158,21 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
    //  * discovered type of data
    //  * a constructor which reads the whole file
 
-/* OLD
-   let banana = "YAY! BANANA!";
-   return MacExpr::new(quote_expr!(cx, {let x: $banana = 44}));
- */
+   let MyCSV: Ident = token::str_to_ident("MyCSV");
 
-   let MyCSV : Ident = token::str_to_ident("MyCSV");
-
-//   fn define_my_csv(cx0: &mut ExtCtxt) -> Option<Gc<syntax::ast::Item>> {
+   // FIXME: Why is this fn necessary?
    let define_my_csv = |cx0 : &mut ExtCtxt| {
       let item1: Option<Gc<syntax::ast::Item>> = quote_item!(cx0,
-//         pub struct  MyCSV {
          pub struct $MyCSV {
             pub data: Vec<(String)>,
          }
       );
       return item1;
    };
-//   }
 
-   let item1: Option<Gc<syntax::ast::Item>> = define_my_csv(cx);  // (1) Why is this necessary?
+   let item1: Option<Gc<syntax::ast::Item>> = define_my_csv(cx);
 
-   let item2: Option<Gc<syntax::ast::Item>>  = quote_item!(cx,
+   let item2: Option<Gc<syntax::ast::Item>> = quote_item!(cx,
       impl $MyCSV {
          pub fn new() -> $MyCSV {
             println!("HMMMMMM.");

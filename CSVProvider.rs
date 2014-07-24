@@ -160,22 +160,47 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
 
    // try 1
    //let ns: &str = "MyCSV";
-   //let MyCSV: Ident = token::str_to_ident(ns);
+   //let MyCsv: Ident = token::str_to_ident(ns);
 
    // try 2
    //let ns: String = format!("{}", name);
-   //let MyCSV: Ident = token::str_to_ident(ns);
+   //let MyCsv: Ident = token::str_to_ident(ns);
    
    // try 3
-   let nss: String = format!("{}", name);
-   let ns: &str = nss.as_slice();
-   let MyCSV: Ident = token::str_to_ident(ns);
+   fn interned_to_ident(xx: InternedString) -> Ident {
+      let yy: String = format!("{}", xx);
+      let zz: &str = yy.as_slice();
+      return token::str_to_ident(zz);
+   }
+
+   fn interned_to_ident_with_suffix(xx: InternedString, suff: &str) -> Ident {
+      let yy: String = format!("{}{}", xx, suff);
+      let zz: &str = yy.as_slice();
+      return token::str_to_ident(zz);
+   }
+
+   let MyCsv    = interned_to_ident(name.clone());
+   let MyCsvRow = interned_to_ident_with_suffix(name, "Row");
+   let col0 = interned_to_ident(labels); // FIXME: parse this field
+
+
+   println!("Defining items in the CSV provider...");
 
    // FIXME: Why is this fn necessary?
+   let define_my_csv_row = |cx0 : &mut ExtCtxt| {
+      return quote_item!(cx0,
+         pub struct $MyCsvRow {
+            pub $col0: String,
+         }
+      );
+   };
+
+   let item0: Option<Gc<syntax::ast::Item>> = define_my_csv_row(cx);
+
    let define_my_csv = |cx0 : &mut ExtCtxt| {
       let item1: Option<Gc<syntax::ast::Item>> = quote_item!(cx0,
-         pub struct $MyCSV {
-            pub data: Vec<(String)>,
+         pub struct $MyCsv {
+            pub data: Vec<$MyCsvRow>,
          }
       );
       return item1;
@@ -184,18 +209,27 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
    let item1: Option<Gc<syntax::ast::Item>> = define_my_csv(cx);
 
    let item2: Option<Gc<syntax::ast::Item>> = quote_item!(cx,
-      impl $MyCSV {
-         pub fn new() -> $MyCSV {
+      impl $MyCsv {
+         pub fn new() -> $MyCsv {
             println!("HMMMMMM.");
-            return $MyCSV {
-               data: (vec!["zero".to_string(), "one".to_string(), "two".to_string()]),
+            return $MyCsv {
+               data: (vec![
+                  $MyCsvRow { $col0: "zero".to_string() },
+                  $MyCsvRow { $col0:  "one".to_string() },
+                  $MyCsvRow { $col0:  "two".to_string() },
+               ]),
             };
          }
       }
    );
 
-   let items = vec![item1.expect("Should be able to construct MyCSV."),
-                    item2.expect("Should be able to construct MyCSV.")];
+
+   let items = vec![item0.expect("Should be able to make struct MyCsvRow"),
+                    item1.expect("Should be able to make struct MyCsv."),
+                    item2.expect("Should be able to implement MyCsv.")];
+
+   println!("OK");
+
    return MacItems::new(items);
 }
 

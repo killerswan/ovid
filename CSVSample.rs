@@ -3,6 +3,7 @@
 
 #![allow(unused_imports)]
 #![allow(unused_variable)]
+#![allow(uppercase_variables)]
 
 #![feature(phase)]
 
@@ -16,6 +17,7 @@ use std::io::fs;
 use std::os;
 use std::str;
 use std::io::Process;
+
 
 #[cfg(not(test))]
 #[main]
@@ -39,17 +41,14 @@ fn csv_basic() {
 fn csv_labeled() {
 
    mod Demo {
+      // tell the type provider the column name
       ProvideCSV_labels!("MyCSV", "./sample1.txt", "Verse")
    }
-
-   // tell the type provider the column name
-
-   assert_eq!(1u,1u);
 
    let samples = Demo::MyCSV::new();
 
    //assert_eq!("A DECLARATION".to_string(), samples.data.get(2).Verse);
-   assert_eq!("two".to_string(), samples.data.get(2).clone());
+   assert_eq!("two".to_string(), samples.data.get(2).clone().Verse);
 }
 
 /*

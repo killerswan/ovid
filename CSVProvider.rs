@@ -229,31 +229,24 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
 */
 
 
-   let define_my_csv_row = |cx0 : &mut ExtCtxt| {
+   let icx : &ExtCtxt = cx;  // an immutable borrow
 
-      let cx1 : &ExtCtxt = cx0;
+   // TODO: iterate through call columns
+   let col = quote_item!(icx, pub $col0: String).expect("column parsing");
 
-      let col = quote_item!(cx1, pub $col0: String).expect("column parsing");
+   let item0 = quote_item!(icx,
+      pub struct $MyCsvRow {
+         $col,
+      }
+   );
 
-      return quote_item!(cx1,
-         pub struct $MyCsvRow {
-            $col,
-         }
-      );
-   };
+   let item1: Option<Gc<syntax::ast::Item>> = quote_item!(icx,
+      pub struct $MyCsv {
+         pub data: Vec<$MyCsvRow>,
+      }
+   );
 
-   let define_my_csv = |cx0 : &mut ExtCtxt| {
-      let item1: Option<Gc<syntax::ast::Item>> = quote_item!(cx0,
-         pub struct $MyCsv {
-            pub data: Vec<$MyCsvRow>,
-         }
-      );
-      return item1;
-   };
-
-   let item0: Option<Gc<syntax::ast::Item>> = define_my_csv_row(cx);
-   let item1: Option<Gc<syntax::ast::Item>> = define_my_csv(cx);
-   let item2: Option<Gc<syntax::ast::Item>> = quote_item!(cx,
+   let item2: Option<Gc<syntax::ast::Item>> = quote_item!(icx,
       impl $MyCsv {
          pub fn new() -> $MyCsv {
             println!("HMMMMMM.");

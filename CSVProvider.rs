@@ -232,7 +232,9 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
    let icx : &ExtCtxt = cx;  // an immutable borrow
 
    // TODO: iterate through call columns
-   let col = quote_item!(icx, pub $col0: String).expect("column parsing");
+   let col = quote_item!(icx,
+      pub $col0: String
+   ).expect("column parsing");
 
    let item0 = quote_item!(icx,
       pub struct $MyCsvRow {

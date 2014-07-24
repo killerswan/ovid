@@ -207,9 +207,13 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
 
    // FIXME: Why is this fn necessary?
    let define_my_csv_row = |cx0 : &mut ExtCtxt| {
+
+      // now, nested problems with cx
+      let col = quote_item!(cx0, pub $col0: String).expect("column parsing");
+
       return quote_item!(cx0,
          pub struct $MyCsvRow {
-            pub $col0: String,
+            $col,
          }
       );
    };

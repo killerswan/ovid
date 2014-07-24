@@ -132,6 +132,30 @@ impl MacResult for MacItems {
    }
 }
 
+fn parse_csv_row<'a>(raw: &'a str, expected_columns: Option<uint>) -> str::StrSplits<'a> {
+   let it = raw.split_str(",");
+
+   // take a pulse
+   let _whatever = it.map(|xx| {
+      println!("iterating over row elements: {}", xx.to_string());
+      return xx;
+   });
+
+   return it;
+}
+
+/* SNIP
+    let mut res: Vec<Vec<(int, int)>> =
+        // rotations
+        iterate(piece, |rot| rot.iter().map(|&(y, x)| (x + y, -y)).collect())
+        .take(if all {6} else {3})
+        // mirror
+        .flat_map(|cur_piece| {
+            iterate(cur_piece, |mir| mir.iter().map(|&(y, x)| (x, y)).collect())
+            .take(2)
+        }).collect();
+ */
+
 fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Box<MacResult> {
    let mut entries = match parse_entries(cx, tts) {
       Some(entries) => entries,
@@ -158,15 +182,6 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
    //  * discovered type of data
    //  * a constructor which reads the whole file
 
-   // try 1
-   //let ns: &str = "MyCSV";
-   //let MyCsv: Ident = token::str_to_ident(ns);
-
-   // try 2
-   //let ns: String = format!("{}", name);
-   //let MyCsv: Ident = token::str_to_ident(ns);
-   
-   // try 3
    fn interned_to_ident(xx: InternedString) -> Ident {
       let yy: String = format!("{}", xx);
       let zz: &str = yy.as_slice();
@@ -195,8 +210,6 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
       );
    };
 
-   let item0: Option<Gc<syntax::ast::Item>> = define_my_csv_row(cx);
-
    let define_my_csv = |cx0 : &mut ExtCtxt| {
       let item1: Option<Gc<syntax::ast::Item>> = quote_item!(cx0,
          pub struct $MyCsv {
@@ -206,8 +219,8 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
       return item1;
    };
 
+   let item0: Option<Gc<syntax::ast::Item>> = define_my_csv_row(cx);
    let item1: Option<Gc<syntax::ast::Item>> = define_my_csv(cx);
-
    let item2: Option<Gc<syntax::ast::Item>> = quote_item!(cx,
       impl $MyCsv {
          pub fn new() -> $MyCsv {

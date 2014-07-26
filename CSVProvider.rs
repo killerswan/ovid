@@ -136,7 +136,7 @@ impl MacResult for MacItems {
    }
 }
 
-fn parse_csv_row<'a>(raw: &'a str, expected_columns: Option<uint>) -> str::StrSplits<'a> {
+fn parse_csv_row(raw: &str, expected_columns: Option<uint>) -> str::StrSplits {
    let mut it = raw.split_str(",");
 
    // take a pulse

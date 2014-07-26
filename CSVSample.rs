@@ -1,4 +1,4 @@
-#![crate_id="CSVSample#0.1-pre"]
+#![crate_name="CSVSample"]
 #![crate_type="bin"]
 
 #![allow(unused_imports)]

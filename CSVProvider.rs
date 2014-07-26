@@ -1,4 +1,4 @@
-#![crate_id="CSVProvider#0.1-pre"]
+#![crate_name="CSVProvider"]
 #![crate_type="dylib"]
 
 // why doesn't "lib" work?
@@ -167,9 +167,9 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
 
    let icx : &ExtCtxt = cx;  // an immutable borrow
 
-   let raw_name   : Entry = entries.shift().expect("should be given a type name");
-   let raw_path   : Entry = entries.shift().expect("should be given a CSV file path");
-   let raw_labels : Entry = entries.shift().expect("should be given column labels");
+   let raw_name   : Entry = entries.remove(0).expect("should be given a type name");
+   let raw_path   : Entry = entries.remove(0).expect("should be given a CSV file path");
+   let raw_labels : Entry = entries.remove(0).expect("should be given column labels");
 
    let name   : InternedString = raw_name.str;
    let path   : InternedString = raw_path.str;

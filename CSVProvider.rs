@@ -9,7 +9,7 @@
 #![feature(globs, macro_rules, quote, managed_boxes, plugin_registrar)]
 
 #![allow(unused_imports)]
-//#![allow(unused_variable)]
+#![allow(unused_variable)]
 #![allow(uppercase_variables)]
 #![allow(unnecessary_parens)]
 

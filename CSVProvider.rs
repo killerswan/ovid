@@ -211,13 +211,9 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
    println!("Defining items in the CSV provider...");
 
    // TODO: iterate through call columns
-   let col = quote_item!(icx,
-      pub $col0: String
-   ).expect("Should be able to label a sample column (for use inside a struct def)");
-
    let item0 = quote_item!(icx,
       pub struct $MyCsvRow {
-         $col,
+         pub $col0: String,
       }
    );
 

@@ -47,8 +47,8 @@ fn csv_labeled() {
 
    let samples = Demo::MyCSV::new();
 
+   assert_eq!("two".to_string(), samples.data.get(2).Verse);
    //assert_eq!("A DECLARATION".to_string(), samples.data.get(2).Verse);
-   assert_eq!("two".to_string(), samples.data.get(2).clone().Verse);
 }
 
 /*

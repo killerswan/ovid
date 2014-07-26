@@ -1,11 +1,6 @@
 #![crate_name="CSVProvider"]
 #![crate_type="dylib"]
 
-// why doesn't "lib" work?
-
-// rustc 0.11.0-pre (b47f2226a25654c5b781d27a91f2fa5274b3a347 2014-06-28 14:31:37 +0000)
-
-
 #![feature(globs, macro_rules, quote, managed_boxes, plugin_registrar)]
 
 #![allow(unused_imports)]
@@ -169,11 +164,11 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
 
    let name   : InternedString = raw_name.str;
    let path   : InternedString = raw_path.str;
-   let labels : InternedString = raw_labels.str;
+   //let labels : InternedString = raw_labels.str;
 
    println!("provide_csv_given_labels: name:   {}", name);
    println!("provide_csv_given_labels: path:   {}", path);
-   println!("provide_csv_given_labels: labels: {}", labels);
+   //println!("provide_csv_given_labels: labels: {}", labels);
 
    // PENDING
    // read the CSV and try to get the type of data in it
@@ -197,12 +192,12 @@ fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Bo
 
    let MyCsv    = interned_to_ident(name.clone());
    let MyCsvRow = interned_to_ident_with_suffix(name, "Row");
-   let col0     = interned_to_ident(labels.clone());
 
    println!("Parsing given labels...");
 
-   let labels1 = format!("{}", labels);
-   let labels_iter = parse_csv_row(labels1.as_slice(), None);
+   let labels1 = format!("{}", raw_labels.str);
+   let labels = parse_csv_row(labels1.as_slice(), None).expect("should be able to parse the row of labels");
+   let col0 = token::str_to_ident(labels[0]);
 
    println!("Defining items in the CSV provider...");
 

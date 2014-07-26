@@ -136,18 +136,12 @@ impl MacResult for MacItems {
    }
 }
 
-fn parse_csv_row(raw: &str, expected_columns: Option<uint>) -> str::StrSplits {
-   let mut it = raw.split_str(",");
-
-   // take a pulse
-   let _whatever = it.map(|xx| {
-      println!("iterating over row elements: {}", xx.to_string());
-      return xx;
-   });
+fn parse_csv_row(raw: &str, expected_columns: Option<uint>) -> Vec<&str> {
+   let data: Vec<&str> = raw.split_str(",").collect();
 
    match expected_columns {
       Some(count) => {
-         if (count == it.count()) {
+         if (count == data.len()) {
             println!("parse_csv_row: matching length expected");
          } else {
             println!("parse_csv_row: wrong length!");
@@ -156,7 +150,7 @@ fn parse_csv_row(raw: &str, expected_columns: Option<uint>) -> str::StrSplits {
       None => (),
    }
 
-   return it;
+   return data;
 }
 
 fn provide_csv_given_labels(cx: &mut ExtCtxt, sp: Span, tts: &[TokenTree]) -> Box<MacResult> {
